@@ -1,20 +1,16 @@
 import express from 'express'
+import authRouter from './routes/auth.routes'
+import databaseService from './services/database.services'
 
 const app = express()
 const port = 3000
-const router = express.Router()
+//parse json data
+app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Hello world')
-})
-router.use((req, res, next) => {
-  console.log(Date.now())
-  next()
-})
-router.get('/tweets', (req, res) => {
-  res.json({ message: 'Hom nay an gi' })
-})
-app.use('/api', router)
+app.use('/api/auth', authRouter)
+
+databaseService.connect()
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
