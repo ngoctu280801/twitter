@@ -1,8 +1,12 @@
 import { Router } from 'express'
 import { loginController, registerController } from '~/controllers/auth.controllers'
-import { loginValidator } from '~/middlewares/auth.middlewares'
+import { loginValidator, registerValidator } from '~/middlewares/auth.middlewares'
 const authRouter = Router()
 
 authRouter.post('/login', loginValidator, loginController)
-authRouter.post('/register', loginValidator, registerController)
+
+/**
+ * body:{name,email,password,date_of_birth}
+ */
+authRouter.post('/register', registerValidator, registerController)
 export default authRouter
