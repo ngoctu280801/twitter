@@ -5,7 +5,6 @@ import User from '~/models/schemas/User.schema'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@twitter.2vbnhic.mongodb.net/?retryWrites=true&w=majority`
-console.log(process.env.DB_PASSWORD)
 class DatabaseService {
   private client: MongoClient
   private db: Db
