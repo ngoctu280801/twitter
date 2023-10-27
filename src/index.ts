@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import authRouter from './routes/auth.routes'
 import databaseService from './services/database.services'
 
@@ -10,6 +10,10 @@ app.use(express.json())
 app.use('/api/auth', authRouter)
 
 databaseService.connect()
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  res.status(400).json({ error: err.message })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

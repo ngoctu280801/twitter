@@ -11,6 +11,7 @@ class UserServices {
       payload: { user_id: userId, token_type: TokenTypes.AccessToken }
     })
   }
+
   private signRefreshToken(userId: string) {
     return signToken({
       payload: { user_id: userId, token_type: TokenTypes.RefreshToken }
@@ -25,6 +26,7 @@ class UserServices {
     const [access_token, refresh_token] = await Promise.all([this.signAccessToken(id), this.signRefreshToken(id)])
     return { access_token, refresh_token }
   }
+
   async getUserByEmail(email: string) {
     const user = await databaseService.users.findOne({ email })
 
