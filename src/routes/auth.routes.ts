@@ -4,7 +4,7 @@ import { loginValidator, registerValidator } from '~/middlewares/auth.middleware
 import { wrapErrorHandler } from '~/utils/handlers'
 const authRouter = Router()
 
-authRouter.post('/login', loginValidator, loginController)
+authRouter.post('/login', loginValidator, wrapErrorHandler(loginController))
 
 /**
  * body:{name,email,password,date_of_birth}
