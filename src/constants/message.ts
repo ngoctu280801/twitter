@@ -14,5 +14,10 @@ export const USER_MESSAGES = {
   PASSWORD_MUST_BE_STRONG: 'Password must be at least 1 lower case, 1 upper case, 1 number and 1 symbol',
   DOB_MUST_BE_ISO_STRING: 'Dob must be a valid ISO string ',
   LOGIN_SUCCESS: 'Login success',
-  LOGIN_ERROR: 'Login error'
+  LOGIN_ERROR: 'Login error',
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
+  REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
+  UNAUTHORIZED: 'Unauthorized',
+  REFRESH_TOKEN_NOT_VALID: ' Refresh token is not valid',
+  LOGOUT_SUCCESS: 'Logout success'
 }
