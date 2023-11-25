@@ -1,7 +1,13 @@
 import { Router } from 'express'
-import { loginController, logoutController, registerController } from '~/controllers/auth.controllers'
+import {
+  emailVerifyController,
+  loginController,
+  logoutController,
+  registerController
+} from '~/controllers/auth.controllers'
 import {
   accessTokenValidator,
+  emailVerifyTokenValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator
@@ -26,5 +32,11 @@ authRouter.post('/register', registerValidator, wrapErrorHandler(registerControl
  * Header: {Authorization: Bearer <access_token>}
  */
 authRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapErrorHandler(logoutController))
+
+/**
+ * path:auth/verify-email
+ * Body: {email_verify_token:string}
+ */
+authRouter.post('/verify-email', emailVerifyTokenValidator, wrapErrorHandler(emailVerifyController))
 
 export default authRouter

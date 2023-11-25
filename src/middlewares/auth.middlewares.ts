@@ -87,7 +87,7 @@ export const registerValidator = validate(
         custom: {
           options: async (value) => {
             const isExist = await databaseService.users.findOne({ email: value })
-            if (!isExist) {
+            if (isExist) {
               throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTENT_ERROR)
             }
             return true
@@ -136,17 +136,21 @@ export const accessTokenValidator = validate(
   checkSchema(
     {
       Authorization: {
-        notEmpty: {
-          errorMessage: USER_MESSAGES.UNAUTHORIZED
-        },
+        trim: true,
         custom: {
           options: async (value, { req }) => {
             try {
-              const accessToken = value.split(' ')[1]
+              const accessToken = (value || '').split(' ')[1]
               if (!accessToken) {
-                throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: HTTP_STATUS.UNAUTHORIZED })
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
               }
-              const decode = await verifyToken({ token: accessToken })
+              const decode = await verifyToken({
+                token: accessToken,
+                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+              })
               req.decodeAuthorization = decode
             } catch (error) {
               throw new ErrorWithStatus({ message: USER_MESSAGES.UNAUTHORIZED, status: HTTP_STATUS.UNAUTHORIZED })
@@ -163,14 +167,19 @@ export const refreshTokenValidator = validate(
   checkSchema(
     {
       refresh_token: {
-        notEmpty: {
-          errorMessage: USER_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
-        },
+        trim: true,
         custom: {
           options: async (value: string, { req }) => {
             try {
+              if (!value) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.REFRESH_TOKEN_IS_REQUIRED,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+
               const [decodeRefreshToken, refreshToken] = await Promise.all([
-                verifyToken({ token: value }),
+                verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
                 databaseService.refreshToken.findOne({ token: value })
               ])
 
@@ -193,6 +202,35 @@ export const refreshTokenValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const emailVerifyTokenValidator = validate(
+  checkSchema(
+    {
+      email_verify_token: {
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            if (!value)
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+
+            const decodeEmailVerifyToken = await verifyToken({
+              token: value,
+              secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+            })
+
+            req.decodeEmailVerifyToken = decodeEmailVerifyToken
+
             return true
           }
         }
