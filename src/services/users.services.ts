@@ -91,6 +91,24 @@ class UserServices {
     const { access_token, refresh_token } = await this.signAccessAndRefreshToken(userId)
     return { access_token, refresh_token }
   }
+
+  async resendVerifyEmail(userId: string) {
+    // recreate the email verification token
+    const emailVerifyToken = await this.signEmailVerifyToken(userId)
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          email_verify_token: emailVerifyToken
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+
+    // todo: implement resend via email
+  }
 }
 
 const userService = new UserServices()

@@ -3,7 +3,8 @@ import {
   emailVerifyController,
   loginController,
   logoutController,
-  registerController
+  registerController,
+  resendEmailVerifyController
 } from '~/controllers/auth.controllers'
 import {
   accessTokenValidator,
@@ -38,5 +39,12 @@ authRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapErro
  * Body: {email_verify_token:string}
  */
 authRouter.post('/verify-email', emailVerifyTokenValidator, wrapErrorHandler(emailVerifyController))
+
+/**
+ * path:auth/resend-verify-email
+ * Body: {}
+ * Header: {Authorization: Bearer <access_token>}
+ */
+authRouter.post('/resend-verify-email', accessTokenValidator, wrapErrorHandler(resendEmailVerifyController))
 
 export default authRouter
