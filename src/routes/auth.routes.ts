@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   emailVerifyController,
+  forgotPasswordController,
   loginController,
   logoutController,
   registerController,
@@ -9,6 +10,7 @@ import {
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator
@@ -46,5 +48,11 @@ authRouter.post('/verify-email', emailVerifyTokenValidator, wrapErrorHandler(ema
  * Header: {Authorization: Bearer <access_token>}
  */
 authRouter.post('/resend-verify-email', accessTokenValidator, wrapErrorHandler(resendEmailVerifyController))
+
+/**
+ * path:auth/forgot-password
+ * Body: {email: string}
+ */
+authRouter.post('/forgot-password', forgotPasswordValidator, wrapErrorHandler(forgotPasswordController))
 
 export default authRouter

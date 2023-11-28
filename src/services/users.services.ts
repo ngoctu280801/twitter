@@ -6,6 +6,7 @@ import { signToken } from '~/utils/jwt'
 import { TokenTypes, UserVerifyStatus } from '~/constants/enum'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
+import { USER_MESSAGES } from '~/constants/message'
 
 class UserServices {
   private signAccessToken(userId: string) {
@@ -17,7 +18,7 @@ class UserServices {
 
   private signRefreshToken(userId: string) {
     return signToken({
-      payload: { user_id: userId, token_type: TokenTypes.RefreshToken },
+      payload: { user_id: userId, token_type: TokenTypes.EmailVerificationToken },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
     })
   }
@@ -26,6 +27,13 @@ class UserServices {
     return signToken({
       payload: { user_id: userId, token_type: TokenTypes.RefreshToken },
       privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+    })
+  }
+
+  private signForgotPasswordToken(userId: string) {
+    return signToken({
+      payload: { user_id: userId, token_type: TokenTypes.ForgotPasswordToken },
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSOWRD_TOKEN as string
     })
   }
 
@@ -108,6 +116,23 @@ class UserServices {
     )
 
     // todo: implement resend via email
+  }
+
+  async forgotPassword(userId: string) {
+    const forgotPasswordToken = await this.signForgotPasswordToken(userId)
+
+    await databaseService.users.updateOne({ _id: new ObjectId(userId) }, [
+      {
+        $set: {
+          forgot_password_token: forgotPasswordToken,
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+
+    //todo: send email http://example.com/forgot-password?token=token
+
+    return { message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
 }
 
