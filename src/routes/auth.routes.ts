@@ -5,7 +5,8 @@ import {
   loginController,
   logoutController,
   registerController,
-  resendEmailVerifyController
+  resendEmailVerifyController,
+  verifyForgotPasswordController
 } from '~/controllers/auth.controllers'
 import {
   accessTokenValidator,
@@ -13,7 +14,8 @@ import {
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  verifyForgotPasswordValidator
 } from '~/middlewares/auth.middlewares'
 import { wrapErrorHandler } from '~/utils/handlers'
 const authRouter = Router()
@@ -54,5 +56,15 @@ authRouter.post('/resend-verify-email', accessTokenValidator, wrapErrorHandler(r
  * Body: {email: string}
  */
 authRouter.post('/forgot-password', forgotPasswordValidator, wrapErrorHandler(forgotPasswordController))
+
+/**
+ * path:auth/verify-forgot-password
+ * Body: {forgot_password_token: string}
+ */
+authRouter.post(
+  '/verify-forgot-password',
+  verifyForgotPasswordValidator,
+  wrapErrorHandler(verifyForgotPasswordController)
+)
 
 export default authRouter

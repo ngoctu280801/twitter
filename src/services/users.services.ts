@@ -33,7 +33,7 @@ class UserServices {
   private signForgotPasswordToken(userId: string) {
     return signToken({
       payload: { user_id: userId, token_type: TokenTypes.ForgotPasswordToken },
-      privateKey: process.env.JWT_SECRET_FORGOT_PASSOWRD_TOKEN as string
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
     })
   }
 
@@ -132,7 +132,7 @@ class UserServices {
 
     //todo: send email http://example.com/forgot-password?token=token
 
-    return { message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
+    return { message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD, token: forgotPasswordToken }
   }
 }
 

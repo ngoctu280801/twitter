@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { checkSchema } from 'express-validator'
+import { ObjectId } from 'mongodb'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -256,6 +257,66 @@ export const forgotPasswordValidator = validate(
               throw new Error(USER_MESSAGES.USER_NOT_FOUND)
             }
             req.user = user
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const verifyForgotPasswordValidator = validate(
+  checkSchema(
+    {
+      forgot_password_token: {
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            try {
+              if (!value) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_REQUIRED,
+                  status: HTTP_STATUS.NO_CONTENT
+                })
+              }
+
+              const decodeForgotPasswordToken = await verifyToken({
+                token: value,
+                secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+              })
+
+              if (!decodeForgotPasswordToken) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_NOT_VALID,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+
+              const user = await databaseService.users.findOne({
+                _id: new ObjectId(decodeForgotPasswordToken.user_id)
+              })
+
+              if (!user) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_NOT_VALID,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+
+              if (user.forgot_password_token !== value) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_NOT_VALID,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+              req.decodeForgotPasswordToken = decodeForgotPasswordToken
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_NOT_VALID,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
             return true
           }
         }
