@@ -6,6 +6,7 @@ import {
   logoutController,
   registerController,
   resendEmailVerifyController,
+  resetPasswordController,
   verifyForgotPasswordController
 } from '~/controllers/auth.controllers'
 import {
@@ -15,6 +16,7 @@ import {
   loginValidator,
   refreshTokenValidator,
   registerValidator,
+  resetPasswordValidator,
   verifyForgotPasswordValidator
 } from '~/middlewares/auth.middlewares'
 import { wrapErrorHandler } from '~/utils/handlers'
@@ -66,5 +68,11 @@ authRouter.post(
   verifyForgotPasswordValidator,
   wrapErrorHandler(verifyForgotPasswordController)
 )
+
+/**
+ * path:auth/reset-password
+ * Body: {forgot_password_token: string, password: string}
+ */
+authRouter.post('/reset-password', resetPasswordValidator, wrapErrorHandler(resetPasswordController))
 
 export default authRouter
