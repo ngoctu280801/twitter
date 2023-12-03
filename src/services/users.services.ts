@@ -152,6 +152,19 @@ class UserServices {
     )
     return await this.signAccessAndRefreshToken(userId)
   }
+
+  async getUserById(userId: string) {
+    const user = await databaseService.users.findOne(
+      { _id: new ObjectId(userId) },
+      {
+        projection: {
+          password: 0
+        }
+      }
+    )
+
+    return user
+  }
 }
 
 const userService = new UserServices()

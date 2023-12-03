@@ -1,5 +1,6 @@
 import express from 'express'
 import authRouter from './routes/auth.routes'
+import userRoute from './routes/user.routes'
 import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middleware'
 databaseService.connect()
@@ -10,6 +11,7 @@ const port = 3000
 app.use(express.json())
 
 app.use('/api/auth', authRouter)
+app.use('/api/user', userRoute)
 
 app.use(defaultErrorHandler)
 
