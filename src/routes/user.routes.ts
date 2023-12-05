@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { meController, updateProfileController } from '~/controllers/user.controller'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
-import { verifiedUserValidator } from '~/middlewares/user.middlewares'
+import { updateMeValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
 import { wrapErrorHandler } from '~/utils/handlers'
 const userRoute = Router()
 
@@ -16,6 +16,12 @@ userRoute.get('/me', accessTokenValidator, wrapErrorHandler(meController))
  * Header: {Authorization: 'Bearer ' <access_token></access_token>}
  * Body: UserSchema
  */
-userRoute.patch('/me', accessTokenValidator, verifiedUserValidator, wrapErrorHandler(updateProfileController))
+userRoute.patch(
+  '/me',
+  accessTokenValidator,
+  verifiedUserValidator,
+  updateMeValidator,
+  wrapErrorHandler(updateProfileController)
+)
 
 export default userRoute

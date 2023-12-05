@@ -30,5 +30,15 @@ export const USER_MESSAGES = {
   FORGOT_PASSWORD_TOKEN_NOT_VALID: 'Forgot password token is not valid',
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Forgot password verified successfully',
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
-  USER_NOT_VERIFIED: 'User has not been verified yet'
+  USER_NOT_VERIFIED: 'User has not been verified yet',
+  BIO_MUST_BE_A_STRING: 'Bio must be a string',
+  BIO_LENGTH: 'Bio  must be from 1 to 255 characters',
+  LOCATION_MUST_BE_A_STRING: 'LOCATION must be a string',
+  LOCATION_LENGTH: 'LOCATION  must be from 1 to 255 characters',
+  WEBSITE_MUST_BE_A_STRING: 'WEBSITE must be a string',
+  WEBSITE_LENGTH: 'WEBSITE  must be from 1 to 255 characters',
+  USERNAME_MUST_BE_A_STRING: 'USERNAME must be a string',
+  USERNAME_LENGTH: 'USERNAME  must be from 1 to 50 characters',
+  IMAGE_PATH_MUST_BE_A_STRING: 'IMAGE PATH must be a string',
+  IMAGE_PATH_LENGTH: 'IMAGE PATH  must be from 1 to 255 characters'
 }
