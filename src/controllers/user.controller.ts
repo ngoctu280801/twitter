@@ -8,3 +8,7 @@ export const meController = async (req: Request, res: Response, next: NextFuncti
   const user = await userService.getUserById(user_id)
   return res.status(HTTP_STATUS.OK).json(user)
 }
+
+export const updateProfileController = async (req: Request, res: Response, next: NextFunction) => {
+  return res.status(HTTP_STATUS.OK).json({})
+}
