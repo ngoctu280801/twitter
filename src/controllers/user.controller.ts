@@ -1,6 +1,7 @@
+import { ParamsDictionary } from 'express-serve-static-core'
 import { Response, Request, NextFunction } from 'express'
 import { HTTP_STATUS } from '~/constants/httpStatus'
-import { TokenPayload } from '~/models/requests/User.request'
+import { TokenPayload, UpdateProfileBody } from '~/models/requests/User.request'
 import userService from '~/services/users.services'
 
 export const meController = async (req: Request, res: Response, next: NextFunction) => {
@@ -9,6 +10,12 @@ export const meController = async (req: Request, res: Response, next: NextFuncti
   return res.status(HTTP_STATUS.OK).json(user)
 }
 
-export const updateProfileController = async (req: Request, res: Response, next: NextFunction) => {
-  return res.status(HTTP_STATUS.OK).json({})
+export const updateProfileController = async (
+  req: Request<ParamsDictionary, any, UpdateProfileBody>,
+  res: Response
+) => {
+  const { user_id } = req.decodeAuthorization as TokenPayload
+  const { body } = req
+  const user = await userService.updateProfile(user_id, body)
+  return res.status(HTTP_STATUS.OK).json(user)
 }

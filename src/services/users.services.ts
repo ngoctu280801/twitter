@@ -1,6 +1,6 @@
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
-import { RegisterReqBody } from '~/models/requests/User.request'
+import { RegisterReqBody, UpdateProfileBody } from '~/models/requests/User.request'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenTypes, UserVerifyStatus } from '~/constants/enum'
@@ -166,6 +166,30 @@ class UserServices {
       {
         projection: {
           password: 0
+        }
+      }
+    )
+
+    return user
+  }
+
+  async updateProfile(userId: string, payload: UpdateProfileBody) {
+    const user = await databaseService.users.findOneAndUpdate(
+      { _id: new ObjectId(userId) },
+      [
+        {
+          $set: {
+            ...payload,
+            updated_at: '$$NOW'
+          }
+        }
+      ],
+      {
+        returnDocument: 'after',
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
         }
       }
     )
