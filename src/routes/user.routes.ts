@@ -1,7 +1,9 @@
 import { Router } from 'express'
 import { meController, updateProfileController } from '~/controllers/user.controller'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
+import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { updateMeValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
+import { UpdateProfileBody } from '~/models/requests/User.request'
 import { wrapErrorHandler } from '~/utils/handlers'
 const userRoute = Router()
 
@@ -21,6 +23,16 @@ userRoute.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
+  filterMiddleware<UpdateProfileBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'username',
+    'avatar',
+    'cover_photo'
+  ]),
   wrapErrorHandler(updateProfileController)
 )
 
