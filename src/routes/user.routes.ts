@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { meController, updateProfileController } from '~/controllers/user.controller'
+import { changePasswordController, meController, updateProfileController } from '~/controllers/user.controller'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { updateMeValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
-import { UpdateProfileBody } from '~/models/requests/User.request'
+import { changePasswordValidator, updateMeValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
+import { ChangePasswordBody, UpdateProfileBody } from '~/models/requests/User.request'
 import { wrapErrorHandler } from '~/utils/handlers'
 const userRoute = Router()
 
@@ -15,7 +15,7 @@ userRoute.get('/me', accessTokenValidator, wrapErrorHandler(meController))
 
 /**
  * Description: Update my profile
- * Header: {Authorization: 'Bearer ' <access_token></access_token>}
+ * Header: {Authorization: 'Bearer ' access_token}
  * Body: UserSchema
  */
 userRoute.patch(
@@ -34,6 +34,20 @@ userRoute.patch(
     'cover_photo'
   ]),
   wrapErrorHandler(updateProfileController)
+)
+
+/**
+ * Description: Change password
+ * Header: {Authorization: 'Bearer ' access_token}
+ * Body: ChangePasswordBody
+ */
+userRoute.put(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  filterMiddleware<ChangePasswordBody>(['password', 'new_password']),
+  wrapErrorHandler(changePasswordController)
 )
 
 export default userRoute

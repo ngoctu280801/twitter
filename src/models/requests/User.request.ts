@@ -41,3 +41,8 @@ export interface UpdateProfileBody {
   avatar?: string
   cover_photo?: string
 }
+
+export interface ChangePasswordBody {
+  password: string
+  new_password: string
+}

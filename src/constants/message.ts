@@ -11,6 +11,8 @@ export const USER_MESSAGES = {
   PASSWORD_REQUIRED: 'Password is required',
   PASSWORD_MUST_BE_A_STRING: 'Password must be a string',
   PASSWORD_LENGTH: 'Password must be at maximum 16 characters',
+  WRONG_PASSWORD: 'Wrong password',
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   PASSWORD_MUST_BE_STRONG: 'Password must be at least 1 lower case, 1 upper case, 1 number and 1 symbol',
   DOB_MUST_BE_ISO_STRING: 'Dob must be a valid ISO string ',
   LOGIN_SUCCESS: 'Login success',

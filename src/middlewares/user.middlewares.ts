@@ -6,9 +6,11 @@ import { USER_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Errors'
 import { TokenPayload } from '~/models/requests/User.request'
 import { validate } from '~/utils/validation'
-import { dobSchema, nameSchema } from './auth.middlewares'
+import { dobSchema, nameSchema, passwordSchema } from './auth.middlewares'
 import { REGEX_USERNAME } from '~/constants/regex'
 import databaseService from '~/services/database.services'
+import { ObjectId } from 'mongodb'
+import { hashPassword } from '~/utils/crypto'
 
 const imageSchema: ParamSchema = {
   optional: true,
@@ -109,6 +111,31 @@ export const updateMeValidator = validate(
       },
       avatar: imageSchema,
       cover_photo: imageSchema
+    },
+    ['body']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      password: {
+        ...passwordSchema,
+        custom: {
+          options: async (value: string, { req }) => {
+            const { user_id } = req.decodeAuthorization
+            const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+
+            if (!user)
+              throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: HTTP_STATUS.UNAUTHORIZED })
+
+            const isMatch = user.password === hashPassword(value)
+            if (!isMatch)
+              throw new ErrorWithStatus({ message: USER_MESSAGES.WRONG_PASSWORD, status: HTTP_STATUS.BAD_REQUEST })
+          }
+        }
+      },
+      new_password: passwordSchema
     },
     ['body']
   )

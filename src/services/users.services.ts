@@ -196,6 +196,19 @@ class UserServices {
 
     return user
   }
+
+  async changePassword(userId: string, new_password: string) {
+    const user = await databaseService.users.findOneAndUpdate({ _id: new ObjectId(userId) }, [
+      {
+        $set: {
+          password: hashPassword(new_password),
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+
+    return user
+  }
 }
 
 const userService = new UserServices()

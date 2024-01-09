@@ -9,7 +9,7 @@ import { hashPassword } from '~/utils/crypto'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
 
-const passwordSchema: ParamSchema = {
+export const passwordSchema: ParamSchema = {
   notEmpty: {
     errorMessage: USER_MESSAGES.PASSWORD_REQUIRED
   },

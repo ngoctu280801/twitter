@@ -1,8 +1,9 @@
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Response, Request, NextFunction } from 'express'
 import { HTTP_STATUS } from '~/constants/httpStatus'
-import { TokenPayload, UpdateProfileBody } from '~/models/requests/User.request'
+import { ChangePasswordBody, TokenPayload, UpdateProfileBody } from '~/models/requests/User.request'
 import userService from '~/services/users.services'
+import { USER_MESSAGES } from '~/constants/message'
 
 export const meController = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = req.decodeAuthorization as TokenPayload
@@ -18,4 +19,14 @@ export const updateProfileController = async (
   const { body } = req
   const user = await userService.updateProfile(user_id, body)
   return res.status(HTTP_STATUS.OK).json(user)
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordBody>,
+  res: Response
+) => {
+  const { user_id } = req.decodeAuthorization as TokenPayload
+  const { body } = req
+  await userService.changePassword(user_id, body.new_password)
+  return res.status(HTTP_STATUS.OK).json({ message: USER_MESSAGES.CHANGE_PASSWORD_SUCCESS })
 }
