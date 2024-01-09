@@ -46,3 +46,7 @@ export interface ChangePasswordBody {
   password: string
   new_password: string
 }
+
+export interface FollowUserBody {
+  followed_user_id: string
+}

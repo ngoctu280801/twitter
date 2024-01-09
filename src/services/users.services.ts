@@ -209,6 +209,14 @@ class UserServices {
 
     return user
   }
+
+  async followUser(userId: string, followedUserId: string) {
+    await databaseService.followers.insertOne({
+      user_id: new ObjectId(userId),
+      followed_user_id: new ObjectId(followedUserId)
+    })
+    return { message: USER_MESSAGES.FOLLOW_SUCCESS }
+  }
 }
 
 const userService = new UserServices()

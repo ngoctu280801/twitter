@@ -140,3 +140,29 @@ export const changePasswordValidator = validate(
     ['body']
   )
 )
+
+export const followUserValidator = validate(
+  checkSchema(
+    {
+      followed_user_id: {
+        custom: {
+          options: async (value: string, { req }) => {
+            const user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+            const { user_id } = req.decodeAuthorization
+
+            if (!user)
+              throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: HTTP_STATUS.UNAUTHORIZED })
+
+            // check followed before
+            const res = await databaseService.followers.findOne({
+              user_id: new ObjectId(user_id),
+              followed_user_id: new ObjectId(value)
+            })
+            if (res) throw new ErrorWithStatus({ message: USER_MESSAGES.FOLLOWED, status: HTTP_STATUS.BAD_REQUEST })
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)

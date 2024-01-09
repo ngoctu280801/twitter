@@ -45,5 +45,7 @@ export const USER_MESSAGES = {
     'username must be 4-15 characters long and contain only letters, numers, underscores, not only numbers',
   USERNAME_EXISTED: 'username already exists',
   IMAGE_PATH_MUST_BE_A_STRING: 'IMAGE PATH must be a string',
-  IMAGE_PATH_LENGTH: 'IMAGE PATH  must be from 1 to 255 characters'
+  IMAGE_PATH_LENGTH: 'IMAGE PATH  must be from 1 to 255 characters',
+  FOLLOW_SUCCESS: 'follow success',
+  FOLLOWED: 'followed before'
 }

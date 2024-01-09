@@ -1,8 +1,18 @@
 import { Router } from 'express'
-import { changePasswordController, meController, updateProfileController } from '~/controllers/user.controller'
+import {
+  changePasswordController,
+  followUserController,
+  meController,
+  updateProfileController
+} from '~/controllers/user.controller'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { changePasswordValidator, updateMeValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
+import {
+  changePasswordValidator,
+  followUserValidator,
+  updateMeValidator,
+  verifiedUserValidator
+} from '~/middlewares/user.middlewares'
 import { ChangePasswordBody, UpdateProfileBody } from '~/models/requests/User.request'
 import { wrapErrorHandler } from '~/utils/handlers'
 const userRoute = Router()
@@ -48,6 +58,19 @@ userRoute.put(
   changePasswordValidator,
   filterMiddleware<ChangePasswordBody>(['password', 'new_password']),
   wrapErrorHandler(changePasswordController)
+)
+
+/**
+ * Description: Follow user
+ * Header: {Authorization: 'Bearer ' access_token}
+ * Body: {user_id:string}
+ */
+userRoute.post(
+  '/follow',
+  accessTokenValidator,
+  verifiedUserValidator,
+  followUserValidator,
+  wrapErrorHandler(followUserController)
 )
 
 export default userRoute
