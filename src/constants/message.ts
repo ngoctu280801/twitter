@@ -47,5 +47,7 @@ export const USER_MESSAGES = {
   IMAGE_PATH_MUST_BE_A_STRING: 'IMAGE PATH must be a string',
   IMAGE_PATH_LENGTH: 'IMAGE PATH  must be from 1 to 255 characters',
   FOLLOW_SUCCESS: 'follow success',
-  FOLLOWED: 'followed before'
+  FOLLOWED: 'followed before',
+  NOT_FOLLOWED: "Hasn't followed before",
+  UNFOLLOW_SUCCESS: 'Unfollow success'
 }

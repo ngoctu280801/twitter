@@ -4,6 +4,8 @@ import { HTTP_STATUS } from '~/constants/httpStatus'
 import { ChangePasswordBody, FollowUserBody, TokenPayload, UpdateProfileBody } from '~/models/requests/User.request'
 import userService from '~/services/users.services'
 import { USER_MESSAGES } from '~/constants/message'
+import databaseService from '~/services/database.services'
+import { ObjectId } from 'mongodb'
 
 export const meController = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = req.decodeAuthorization as TokenPayload
@@ -36,5 +38,26 @@ export const followUserController = async (req: Request<ParamsDictionary, any, F
   const { body } = req
   const followedUser = body.followed_user_id
   const result = await userService.followUser(user_id, followedUser)
+  return res.status(HTTP_STATUS.OK).json(result)
+}
+
+export const unFollowUserController = async (req: Request<ParamsDictionary, any, FollowUserBody>, res: Response) => {
+  const { user_id } = req.decodeAuthorization as TokenPayload
+  const { params } = req
+  console.log('🚀 ~ unFollowUserController ~ params:', params)
+  const followedUser = params.id
+
+  const user = await databaseService.users.findOne({ _id: new ObjectId(followedUser) })
+
+  if (!user) return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: USER_MESSAGES.USER_NOT_FOUND })
+
+  // check followed before
+  const record = await databaseService.followers.findOne({
+    user_id: new ObjectId(user_id),
+    followed_user_id: new ObjectId(followedUser)
+  })
+  if (!record) return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: USER_MESSAGES.NOT_FOLLOWED })
+
+  const result = await userService.unfollowUser(user_id, followedUser)
   return res.status(HTTP_STATUS.OK).json(result)
 }

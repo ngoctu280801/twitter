@@ -3,6 +3,7 @@ import {
   changePasswordController,
   followUserController,
   meController,
+  unFollowUserController,
   updateProfileController
 } from '~/controllers/user.controller'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
@@ -72,5 +73,12 @@ userRoute.post(
   followUserValidator,
   wrapErrorHandler(followUserController)
 )
+
+/**
+ * Description: Follow user
+ * Header: {Authorization: 'Bearer ' access_token}
+ * Body: {user_id:string}
+ */
+userRoute.delete('/unfollow/:id', accessTokenValidator, verifiedUserValidator, wrapErrorHandler(unFollowUserController))
 
 export default userRoute
