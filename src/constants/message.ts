@@ -39,6 +39,9 @@ export const USER_MESSAGES = {
   WEBSITE_LENGTH: 'WEBSITE  must be from 1 to 255 characters',
   USERNAME_MUST_BE_A_STRING: 'USERNAME must be a string',
   USERNAME_LENGTH: 'USERNAME  must be from 1 to 50 characters',
+  USERNAME_INVALID:
+    'username must be 4-15 characters long and contain only letters, numers, underscores, not only numbers',
+  USERNAME_EXISTED: 'username already exists',
   IMAGE_PATH_MUST_BE_A_STRING: 'IMAGE PATH must be a string',
   IMAGE_PATH_LENGTH: 'IMAGE PATH  must be from 1 to 255 characters'
 }

@@ -7,6 +7,8 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { TokenPayload } from '~/models/requests/User.request'
 import { validate } from '~/utils/validation'
 import { dobSchema, nameSchema } from './auth.middlewares'
+import { REGEX_USERNAME } from '~/constants/regex'
+import databaseService from '~/services/database.services'
 
 const imageSchema: ParamSchema = {
   optional: true,
@@ -92,12 +94,17 @@ export const updateMeValidator = validate(
           errorMessage: USER_MESSAGES.USERNAME_MUST_BE_A_STRING
         },
         trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 50
-          },
-          errorMessage: USER_MESSAGES.USERNAME_LENGTH
+        custom: {
+          options: async (value: string, { req }) => {
+            if (!REGEX_USERNAME.test(value)) {
+              throw new ErrorWithStatus({ message: USER_MESSAGES.USERNAME_INVALID, status: HTTP_STATUS.BAD_REQUEST })
+            }
+
+            const user = await databaseService.users.findOne({ username: value })
+            if (user) {
+              throw new ErrorWithStatus({ message: USER_MESSAGES.USERNAME_EXISTED, status: HTTP_STATUS.BAD_REQUEST })
+            }
+          }
         }
       },
       avatar: imageSchema,
