@@ -104,6 +104,11 @@ class UserServices {
       userId,
       verify: UserVerifyStatus.Verified
     })
+
+    await databaseService.refreshToken.insertOne(
+      new RefreshToken({ user_id: new ObjectId(userId), token: refresh_token })
+    )
+
     return { access_token, refresh_token }
   }
 
