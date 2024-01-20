@@ -23,6 +23,7 @@ export const USER_MESSAGES = {
   UNAUTHORIZED: 'Unauthorized',
   REFRESH_TOKEN_NOT_VALID: ' Refresh token is not valid',
   LOGOUT_SUCCESS: 'Logout success',
+  REGISTER_SUCCESS: 'Register success',
   USER_NOT_FOUND: 'User not found',
   EMAIL_VERIFIED: 'Email already verified',
   EMAIL_VERIFY_SUCCESS: 'Email successfully verified',
@@ -49,5 +50,6 @@ export const USER_MESSAGES = {
   FOLLOW_SUCCESS: 'follow success',
   FOLLOWED: 'followed before',
   NOT_FOLLOWED: "Hasn't followed before",
-  UNFOLLOW_SUCCESS: 'Unfollow success'
+  UNFOLLOW_SUCCESS: 'Unfollow success',
+  GMAIL_NOT_VERIFIED: 'Gmail not verified'
 }

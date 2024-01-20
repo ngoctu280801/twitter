@@ -1,3 +1,4 @@
+import { config } from 'dotenv'
 import { Response, Request } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
@@ -15,6 +16,8 @@ import {
 import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
+
+config()
 
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
@@ -105,4 +108,20 @@ export const resetPasswordController = async (
 
   const result = await userService.resetPassword({ userId: user_id, verify, password })
   return res.json({ message: USER_MESSAGES.RESET_PASSWORD_SUCCESS, ...result })
+}
+
+export const googleOAuthController = async (
+  req: Request<ParamsDictionary, any, ResetPasswordReqBody>,
+  res: Response
+) => {
+  const { code } = req.query
+  const result = await userService.oauth(code as string)
+  const params = {
+    access_token: result.access_token,
+    refresh_token: result.refresh_token,
+    new_user: result.newUser.toString()
+  }
+  const url = process.env.CLIENT_REDIRECT + '?' + new URLSearchParams(params)
+
+  return res.redirect(url)
 }

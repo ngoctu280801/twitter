@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   emailVerifyController,
   forgotPasswordController,
+  googleOAuthController,
   loginController,
   logoutController,
   registerController,
@@ -74,5 +75,10 @@ authRouter.post(
  * Body: {forgot_password_token: string, password: string}
  */
 authRouter.post('/reset-password', resetPasswordValidator, wrapErrorHandler(resetPasswordController))
+
+/**
+ * path:auth/oauth/google
+ */
+authRouter.get('/oauth/google', wrapErrorHandler(googleOAuthController))
 
 export default authRouter

@@ -6,7 +6,7 @@ import { defaultErrorHandler } from './middlewares/error.middleware'
 databaseService.connect()
 
 const app = express()
-const port = 3000
+const port = 3030
 //parse json data
 app.use(express.json())
 
