@@ -6,7 +6,7 @@ import { defaultErrorHandler } from './middlewares/error.middleware'
 import mediaRoute from './routes/media.routes'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_IMAGE_DIR } from './constants/dir'
+import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 
 config()
@@ -22,7 +22,7 @@ initFolder()
 //parse json data
 app.use(express.json())
 
-// app.use(express.static(UPLOAD_IMAGE_DIR))
+app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRoute)
