@@ -92,6 +92,16 @@ class UserServices {
     return await databaseService.refreshToken.deleteOne({ token: refreshToken })
   }
 
+  async refreshToken(userId: string, verify: UserVerifyStatus, token: string) {
+    const { access_token, refresh_token } = await this.signAccessAndRefreshToken({ userId, verify })
+
+    await databaseService.refreshToken.deleteOne({ token })
+    await databaseService.refreshToken.insertOne(
+      new RefreshToken({ user_id: new ObjectId(userId), token: refresh_token })
+    )
+    return { access_token, refresh_token }
+  }
+
   async verifyEmail(userId: string) {
     await databaseService.users.updateOne(
       { _id: new ObjectId(userId) },

@@ -5,6 +5,7 @@ import {
   googleOAuthController,
   loginController,
   logoutController,
+  refreshTokenController,
   registerController,
   resendEmailVerifyController,
   resetPasswordController,
@@ -40,6 +41,12 @@ authRouter.post('/register', registerValidator, wrapErrorHandler(registerControl
  * Header: {Authorization: Bearer <access_token>}
  */
 authRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapErrorHandler(logoutController))
+
+/**
+ * path:auth/refresh_token
+ * Body: {refresh_token:string}
+ */
+authRouter.post('/refresh-token', refreshTokenValidator, wrapErrorHandler(refreshTokenController))
 
 /**
  * path:auth/verify-email
