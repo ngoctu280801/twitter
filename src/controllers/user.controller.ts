@@ -44,7 +44,7 @@ export const followUserController = async (req: Request<ParamsDictionary, any, F
 export const unFollowUserController = async (req: Request<ParamsDictionary, any, FollowUserBody>, res: Response) => {
   const { user_id } = req.decodeAuthorization as TokenPayload
   const { params } = req
-  console.log('🚀 ~ unFollowUserController ~ params:', params)
+
   const followedUser = params.id
 
   const user = await databaseService.users.findOne({ _id: new ObjectId(followedUser) })
