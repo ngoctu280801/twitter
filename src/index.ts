@@ -11,7 +11,9 @@ import staticRouter from './routes/static.routes'
 
 config()
 
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+})
 
 const app = express()
 const port = process.env.PORT
