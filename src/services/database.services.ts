@@ -43,6 +43,16 @@ class DatabaseService {
     this.users.createIndex({ email: 1 }, { unique: true })
     this.users.createIndex({ username: 1 }, { unique: true })
   }
+
+  indexRefreshTokens() {
+    this.refreshToken.createIndex({ token: 1 })
+    this.refreshToken.createIndex(
+      { exp: 1 },
+      {
+        expireAfterSeconds: 0
+      }
+    )
+  }
 }
 
 const databaseService = new DatabaseService()
