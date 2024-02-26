@@ -6,8 +6,7 @@ export const signToken = ({
   payload,
   privateKey,
   options = {
-    algorithm: 'HS256',
-    expiresIn: process.env.TOKEN_EXPIRED_IN
+    algorithm: 'HS256'
   }
 }: {
   payload: string | Buffer | object
