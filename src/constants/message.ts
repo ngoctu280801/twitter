@@ -53,3 +53,15 @@ export const USER_MESSAGES = {
   UNFOLLOW_SUCCESS: 'Unfollow success',
   GMAIL_NOT_VERIFIED: 'Gmail not verified'
 }
+
+export const TWEET_MESSAGES = {
+  INVALID_TYPE: 'Invalid type',
+  INVALID_AUDIENCE: 'Invalid audience',
+  SHOULD_BE_NO_PARENT: 'Type tweet so parent_id should be null',
+  PARENT_ID_INVALID: 'parent_id is not valid',
+  CONTENT_MUST_BE_EMPTY: 'Content must be empty',
+  CONTENT_INVALID: 'Content is not valid',
+  HASHTAGS_MUST_BE_STRING_ARRAY: 'hashtags must be a string array',
+  MENTIONS_MUST_BE_OBJECT_ID_ARRAY: 'mentions must be a objectId array',
+  MEDIA_INVALID: 'Media is not valid'
+}

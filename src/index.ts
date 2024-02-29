@@ -8,6 +8,7 @@ import { initFolder } from './utils/file'
 import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
+import tweetRoute from './routes/tweet.routes'
 
 config()
 
@@ -30,6 +31,7 @@ app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use('/api/auth', authRouter)
 app.use('/api/user', userRoute)
 app.use('/api/media', mediaRoute)
+app.use('/api/tweet', tweetRoute)
 app.use('/static', staticRouter)
 
 app.use(defaultErrorHandler)

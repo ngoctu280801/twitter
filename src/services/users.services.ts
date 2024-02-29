@@ -17,7 +17,10 @@ class UserServices {
   private signAccessToken({ userId, verify }: IUserToken) {
     return signToken({
       payload: { user_id: userId, verify, token_type: TokenTypes.AccessToken },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+      options: {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRED_IN
+      }
     })
   }
 
