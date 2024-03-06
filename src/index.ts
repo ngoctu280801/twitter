@@ -9,6 +9,8 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import tweetRoute from './routes/tweet.routes'
+import bookmarkRoute from './routes/bookmark.routes'
+import likeRoute from './routes/like.routes'
 
 config()
 
@@ -32,6 +34,8 @@ app.use('/api/auth', authRouter)
 app.use('/api/user', userRoute)
 app.use('/api/media', mediaRoute)
 app.use('/api/tweet', tweetRoute)
+app.use('/api/bookmark', bookmarkRoute)
+app.use('/api/like', likeRoute)
 app.use('/static', staticRouter)
 
 app.use(defaultErrorHandler)

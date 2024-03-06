@@ -63,5 +63,6 @@ export const TWEET_MESSAGES = {
   CONTENT_INVALID: 'Content is not valid',
   HASHTAGS_MUST_BE_STRING_ARRAY: 'hashtags must be a string array',
   MENTIONS_MUST_BE_OBJECT_ID_ARRAY: 'mentions must be a objectId array',
-  MEDIA_INVALID: 'Media is not valid'
+  MEDIA_INVALID: 'Media is not valid',
+  TWEET_ID_INVALID: 'tweet_id is not found'
 }
