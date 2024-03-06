@@ -81,6 +81,14 @@ class DatabaseService {
       )
     }
   }
+
+  async indexBookmarks() {
+    const exist = await this.bookmarks.indexExists(['user_id_1_tweet_id_1'])
+
+    if (!exist) {
+      this.bookmarks.createIndex({ user_id: 1, tweet_id: 1 })
+    }
+  }
 }
 
 const databaseService = new DatabaseService()
