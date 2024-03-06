@@ -65,5 +65,6 @@ export const TWEET_MESSAGES = {
   MENTIONS_MUST_BE_OBJECT_ID_ARRAY: 'mentions must be a objectId array',
   MEDIA_INVALID: 'Media is not valid',
   TWEET_ID_INVALID: 'tweet_id is not found',
-  TWEET_BOOKMARKED: 'tweet is bookmarked'
+  TWEET_BOOKMARKED: 'tweet is bookmarked',
+  DELETE_BOOKMARK: 'delete bookmark successfully'
 }

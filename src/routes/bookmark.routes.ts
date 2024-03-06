@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createBookmarkTweetController } from '~/controllers/bookmark.controllers'
+import { createBookmarkTweetController, deleteBookmarkTweetController } from '~/controllers/bookmark.controllers'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
 import { createBookmarkValidator } from '~/middlewares/bookmark.middleware'
 import { verifiedUserValidator } from '~/middlewares/user.middlewares'
@@ -19,5 +19,11 @@ bookmarkRoute.post(
   createBookmarkValidator,
   wrapErrorHandler(createBookmarkTweetController)
 )
+
+/**
+ * Description: delete bookmark
+ * Header: {Authorization: 'Bearer ' access_token}
+ */
+bookmarkRoute.delete('/', accessTokenValidator, verifiedUserValidator, wrapErrorHandler(deleteBookmarkTweetController))
 
 export default bookmarkRoute
