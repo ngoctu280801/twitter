@@ -23,7 +23,7 @@ export const deleteBookmarkTweetController = async (
   res: Response
 ) => {
   const { user_id } = req.decodeAuthorization as TokenPayload
-  const tweet_id = req.params.tweet_id as string
+  const tweet_id = req.params.tweet_id
 
   const result = await bookmarkServices.unBookmarkTweet(user_id, tweet_id)
 

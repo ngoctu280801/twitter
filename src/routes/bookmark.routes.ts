@@ -25,7 +25,7 @@ bookmarkRoute.post(
  * Header: {Authorization: 'Bearer ' access_token}
  */
 bookmarkRoute.delete(
-  '/:tweet_id',
+  '/tweet/:tweet_id',
   accessTokenValidator,
   verifiedUserValidator,
   wrapErrorHandler(deleteBookmarkTweetController)
