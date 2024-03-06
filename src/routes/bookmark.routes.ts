@@ -24,6 +24,11 @@ bookmarkRoute.post(
  * Description: delete bookmark
  * Header: {Authorization: 'Bearer ' access_token}
  */
-bookmarkRoute.delete('/', accessTokenValidator, verifiedUserValidator, wrapErrorHandler(deleteBookmarkTweetController))
+bookmarkRoute.delete(
+  '/:tweet_id',
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapErrorHandler(deleteBookmarkTweetController)
+)
 
 export default bookmarkRoute
