@@ -66,5 +66,6 @@ export const TWEET_MESSAGES = {
   MEDIA_INVALID: 'Media is not valid',
   TWEET_ID_INVALID: 'tweet_id is not found',
   TWEET_BOOKMARKED: 'tweet is bookmarked',
-  DELETE_BOOKMARK: 'delete bookmark successfully'
+  DELETE_BOOKMARK: 'delete bookmark successfully',
+  TWEET_NOT_PUBLIC: 'tweet is not public'
 }

@@ -12,7 +12,7 @@ export const createTweetController = async (req: Request, res: Response) => {
 }
 
 export const getTweetDetailController = async (req: Request, res: Response) => {
-  const tweetId = req.params.id
+  const tweetId = req.params.tweet_id
 
   const tweet = await tweetsServices.getTweetById(tweetId)
 
