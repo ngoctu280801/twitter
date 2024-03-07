@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { createTweetController, getTweetDetailController } from '~/controllers/tweet.controllers'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
 import { createTweetValidator } from '~/middlewares/tweet.middleware'
-import { verifiedUserValidator } from '~/middlewares/user.middlewares'
+import { isUserLoggedInValidator, verifiedUserValidator } from '~/middlewares/user.middlewares'
 
 import { wrapErrorHandler } from '~/utils/handlers'
 
@@ -25,6 +25,11 @@ tweetRoute.post(
  * Description: get tweet
  * Header: {Authorization: 'Bearer ' access_token}
  */
-tweetRoute.get('/:id', accessTokenValidator, verifiedUserValidator, wrapErrorHandler(getTweetDetailController))
+tweetRoute.get(
+  '/:id',
+  isUserLoggedInValidator(accessTokenValidator),
+  isUserLoggedInValidator(verifiedUserValidator),
+  wrapErrorHandler(getTweetDetailController)
+)
 
 export default tweetRoute
