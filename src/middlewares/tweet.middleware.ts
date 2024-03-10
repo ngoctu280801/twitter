@@ -119,7 +119,117 @@ export const tweetIdValidator = validate(
               throw new ErrorWithStatus({ status: HTTP_STATUS.BAD_REQUEST, message: TWEET_MESSAGES.TWEET_ID_INVALID })
             }
 
-            const tweet = await databaseService.tweets.findOne({ _id: new ObjectId(value) })
+            const tweet = (
+              await databaseService.tweets
+                .aggregate<Tweet>([
+                  {
+                    $match: {
+                      _id: new ObjectId(value)
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'hashtags',
+                      localField: 'hashtags',
+                      foreignField: '_id',
+                      as: 'hashtags'
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'users',
+                      localField: 'mentions',
+                      foreignField: '_id',
+                      as: 'mentions'
+                    }
+                  },
+                  {
+                    $addFields: {
+                      mentions: {
+                        $map: {
+                          input: '$mentions',
+                          as: 'mention',
+                          in: {
+                            _id: '$$mention._id',
+                            name: '$$mention.name',
+                            username: '$$mention.username',
+                            email: '$$mention.email'
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'bookmarks',
+                      localField: '_id',
+                      foreignField: 'tweet_id',
+                      as: 'bookmarks'
+                    }
+                  },
+                  {
+                    $addFields: {
+                      bookmarks: {
+                        $size: '$bookmarks'
+                      }
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'tweets',
+                      localField: '_id',
+                      foreignField: 'parent_id',
+                      as: 'tweet_children'
+                    }
+                  },
+                  {
+                    $addFields: {
+                      retweet_count: {
+                        $size: {
+                          $filter: {
+                            input: '$tweet_children',
+                            as: 'retweet',
+                            cond: {
+                              $eq: ['$$retweet.type', 1]
+                            }
+                          }
+                        }
+                      },
+                      quote_count: {
+                        $size: {
+                          $filter: {
+                            input: '$tweet_children',
+                            as: 'retweet',
+                            cond: {
+                              $eq: ['$$retweet.type', 2]
+                            }
+                          }
+                        }
+                      },
+                      comment_count: {
+                        $size: {
+                          $filter: {
+                            input: '$tweet_children',
+                            as: 'retweet',
+                            cond: {
+                              $eq: ['$$retweet.type', 3]
+                            }
+                          }
+                        }
+                      },
+                      views: {
+                        $add: ['$user_views', '$guest_views']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      tweet_children: 0
+                    }
+                  }
+                ])
+                .toArray()
+            )[0]
 
             if (!tweet) {
               throw new ErrorWithStatus({ status: HTTP_STATUS.NOT_FOUND, message: TWEET_MESSAGES.TWEET_ID_INVALID })
@@ -138,7 +248,7 @@ export const tweetIdValidator = validate(
 export const audienceValidator = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const tweet = req.tweet as Tweet
-    console.log('🚀 ~ audienceValidator ~ tweet:', tweet)
+
     const { user_id } = req.decodeAuthorization as TokenPayload
 
     if (tweet.audience === TweetAudience.TwitterCircle) {
@@ -158,7 +268,7 @@ export const audienceValidator = async (req: Request, res: Response, next: NextF
     // user in tweet circle of author
     const isInTweeterCircle = author.tweet_circle?.find((item) => item.equals(user_id))
 
-    if (!isInTweeterCircle && !author._id.equals(user_id)) {
+    if (!isInTweeterCircle && !author._id.equals(user_id) && tweet.audience === TweetAudience.TwitterCircle) {
       throw new ErrorWithStatus({ status: HTTP_STATUS.FORBIDDEN, message: TWEET_MESSAGES.TWEET_NOT_PUBLIC })
     }
     next()
