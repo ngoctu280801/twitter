@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { checkSchema } from 'express-validator'
-import { isEmpty } from 'lodash'
+import _, { isEmpty } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { MediaType, TweetAudience, TweetType, UserVerifyStatus } from '~/constants/enum'
 import { HTTP_STATUS } from '~/constants/httpStatus'
@@ -276,3 +276,17 @@ export const audienceValidator = async (req: Request, res: Response, next: NextF
     next(error)
   }
 }
+
+export const tweetTypeChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [numberEnumToArray(_.omit(TweetType, TweetType.Tweet))],
+          errorMessage: TWEET_MESSAGES.INVALID_TYPE_CHILDREN
+        }
+      }
+    },
+    ['query']
+  )
+)

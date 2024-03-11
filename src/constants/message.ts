@@ -56,6 +56,7 @@ export const USER_MESSAGES = {
 
 export const TWEET_MESSAGES = {
   INVALID_TYPE: 'Invalid type',
+  INVALID_TYPE_CHILDREN: 'type of children must be 1,2 or 3',
   INVALID_AUDIENCE: 'Invalid audience',
   SHOULD_BE_NO_PARENT: 'Type tweet so parent_id should be null',
   PARENT_ID_INVALID: 'parent_id is not valid',
