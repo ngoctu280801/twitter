@@ -190,9 +190,10 @@ class TweetsServices {
       }
     ]
 
-    const result = await databaseService.tweets.aggregate<Tweet>(aggregateConfig).toArray()
+    const data = await databaseService.tweets.aggregate<Tweet>(aggregateConfig).toArray()
+    const total = await databaseService.tweets.countDocuments({ parent_id: new ObjectId(tweet_id), type: tweet_type })
 
-    return result
+    return { data, total }
   }
 }
 

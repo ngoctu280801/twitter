@@ -28,7 +28,18 @@ export const getTweetChildrenController = async (req: Request, res: Response) =>
   const tweet_id = req.params.tweet_id as string
   const { page = PAGINATION.PAGE, limit = PAGINATION.LIMIT, tweet_type = TweetType.Comment } = req.query
 
-  const children = await tweetsServices.getTweetChildren(tweet_id, Number(page), Number(limit), Number(tweet_type))
+  const { data, total } = await tweetsServices.getTweetChildren(
+    tweet_id,
+    Number(page),
+    Number(limit),
+    Number(tweet_type)
+  )
 
-  return res.json({ data: children, page: Number(page), limit: Number(limit) })
+  return res.json({
+    data: data,
+    page: Number(page),
+    limit: Number(limit),
+    total,
+    total_pages: Math.ceil(total / Number(limit))
+  })
 }
