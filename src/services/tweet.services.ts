@@ -66,7 +66,8 @@ class TweetsServices {
         returnDocument: 'after',
         projection: {
           guest_views: 1,
-          user_view: 1
+          user_view: 1,
+          updated_at: 1
         }
       }
     )
