@@ -1,10 +1,12 @@
 import { Router } from 'express'
 import {
   createTweetController,
+  getNewFeedController,
   getTweetChildrenController,
   getTweetDetailController
 } from '~/controllers/tweet.controllers'
 import { accessTokenValidator } from '~/middlewares/auth.middlewares'
+import { paginationValidator } from '~/middlewares/pagination.middleware'
 import {
   audienceValidator,
   createTweetValidator,
@@ -55,7 +57,21 @@ tweetRoute.get(
   isUserLoggedInValidator(verifiedUserValidator),
   audienceValidator,
   tweetTypeChildrenValidator,
+  paginationValidator,
   wrapErrorHandler(getTweetChildrenController)
+)
+
+/**
+ * Description: get tweets in new feed
+ * Header: {Authorization: 'Bearer ' access_token}
+ * Query:{limit:number, page:number}
+ */
+tweetRoute.get(
+  '/',
+  accessTokenValidator,
+  verifiedUserValidator,
+  paginationValidator,
+  wrapErrorHandler(getNewFeedController)
 )
 
 export default tweetRoute

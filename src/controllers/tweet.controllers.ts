@@ -1,12 +1,17 @@
+import { ParamsDictionary } from 'express-serve-static-core'
 import { Request, Response } from 'express'
+
 import { TweetType } from '~/constants/enum'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { TWEET_MESSAGES } from '~/constants/message'
 import { PAGINATION } from '~/constants/pagination'
+
 import { TweetParams, TweetQuery } from '~/models/requests/Tweet.request'
 import { TokenPayload } from '~/models/requests/User.request'
 import Tweet from '~/models/schemas/Tweet.schema'
+
 import tweetsServices from '~/services/tweet.services'
+import { IPagination } from '~/models/requests/Pagination.request'
 
 export const createTweetController = async (req: Request, res: Response) => {
   const { user_id } = req.decodeAuthorization as TokenPayload
@@ -45,4 +50,12 @@ export const getTweetChildrenController = async (req: Request<TweetParams, any, 
     total,
     total_pages: Math.ceil(total / Number(limit))
   })
+}
+
+export const getNewFeedController = async (req: Request<ParamsDictionary, any, any, IPagination>, res: Response) => {
+  const user_id = req.decodeAuthorization?.user_id as string
+  const { page, limit } = req.query
+
+  const result = await tweetsServices.getNewFeeds({ user_id, page, limit })
+  return res.json(result)
 }

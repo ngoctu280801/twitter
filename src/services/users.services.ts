@@ -273,6 +273,25 @@ class UserServices {
     return { message: USER_MESSAGES.UNFOLLOW_SUCCESS }
   }
 
+  async getFollowUsers(userId: string) {
+    const users = await databaseService.followers
+      .find(
+        { user_id: new ObjectId(userId) },
+        {
+          projection: {
+            followed_user_id: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
+
+    const ids = users.map((item) => item.followed_user_id)
+    ids.push(new ObjectId(userId))
+
+    return ids
+  }
+
   private async getOAuthGoogleToken(code: string) {
     const body = {
       code,

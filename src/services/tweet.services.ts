@@ -4,6 +4,8 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import { ObjectId } from 'mongodb'
 import Hashtag from '~/models/schemas/Hashtags.schema'
 import { TweetType } from '~/constants/enum'
+import { IGetNewFeeds } from '~/interfaces/tweet'
+import userService from './users.services'
 
 class TweetsServices {
   async checkAndCreateHashtag(hashtags: string[]) {
@@ -222,6 +224,11 @@ class TweetsServices {
     })
 
     return { tweets, total }
+  }
+
+  async getNewFeeds({ user_id, limit, page }: IGetNewFeeds) {
+    const users = await userService.getFollowUsers(user_id)
+    return users
   }
 }
 
