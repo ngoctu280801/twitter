@@ -8,3 +8,12 @@ export const searchController = async (req: Request<ParamsDictionary, any, any, 
   const result = await searchServices.search({ ...req.query, user_id })
   return res.json({ data: result, ...req.query })
 }
+
+export const searchTweetByHashtagController = async (
+  req: Request<ParamsDictionary, any, any, SearchQuery>,
+  res: Response
+) => {
+  const user_id = req.decodeAuthorization?.user_id as string
+  const result = await searchServices.searchByHashTags({ ...req.query, user_id })
+  return res.json({ ...result, ...req.query })
+}
