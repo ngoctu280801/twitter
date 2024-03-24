@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb'
 import { MediaType, MediaTypeQuery, TweetAudience, TweetType } from '~/constants/enum'
 import { PAGINATION } from '~/constants/pagination'
 import hashtagServices from './hashtags.services'
+import userService from './users.services'
 
 interface ISearch extends SearchQuery {
   user_id: string
@@ -174,7 +175,7 @@ const tweetAggregations = ({ user_id, limit, page }: { user_id: string; limit: s
 ]
 
 class SearchServices {
-  async search({ content, media_type, limit, page, user_id }: ISearch) {
+  async search({ content, media_type, follow_people, limit, page, user_id }: ISearch) {
     let $match: any = {}
     if (content) {
       $match = {
@@ -190,6 +191,12 @@ class SearchServices {
       } else if (media_type === MediaTypeQuery.Video) {
         $match = { ...$match, 'medias.type': { $in: [MediaType.Video] } }
       }
+    }
+
+    if (follow_people === 'true') {
+      const users = await userService.getFollowUsers(user_id)
+
+      $match = { ...$match, user_id: { $in: users } }
     }
 
     const [result, total] = await Promise.all([
