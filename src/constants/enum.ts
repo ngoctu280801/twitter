@@ -27,3 +27,8 @@ export enum TweetAudience {
   Everyone,
   TwitterCircle
 }
+
+export enum MediaTypeQuery {
+  Image = 'image',
+  Video = 'video'
+}

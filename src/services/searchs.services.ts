@@ -2,7 +2,7 @@ import { SearchQuery } from '~/models/requests/Search.request'
 import databaseService from './database.services'
 import Tweet from '~/models/schemas/Tweet.schema'
 import { ObjectId } from 'mongodb'
-import { TweetAudience, TweetType } from '~/constants/enum'
+import { MediaType, MediaTypeQuery, TweetAudience, TweetType } from '~/constants/enum'
 import { PAGINATION } from '~/constants/pagination'
 import hashtagServices from './hashtags.services'
 
@@ -174,20 +174,44 @@ const tweetAggregations = ({ user_id, limit, page }: { user_id: string; limit: s
 ]
 
 class SearchServices {
-  async search({ content, limit, page, user_id }: ISearch) {
-    const result = await databaseService.tweets
-      .aggregate<Tweet>([
-        {
-          $match: {
-            $text: {
-              $search: content
-            }
-          }
-        },
-        ...tweetAggregations({ user_id, limit, page })
-      ])
-      .toArray()
-    return result
+  async search({ content, media_type, limit, page, user_id }: ISearch) {
+    let $match: any = {}
+    if (content) {
+      $match = {
+        $text: {
+          $search: content
+        }
+      }
+    }
+
+    if (media_type) {
+      if (media_type === MediaTypeQuery.Image) {
+        $match = { ...$match, 'medias.type': MediaType.Image }
+      } else if (media_type === MediaTypeQuery.Video) {
+        $match = { ...$match, 'medias.type': { $in: [MediaType.Video] } }
+      }
+    }
+
+    const [result, total] = await Promise.all([
+      databaseService.tweets
+        .aggregate<Tweet>([
+          {
+            $match
+          },
+          ...tweetAggregations({ user_id, limit, page })
+        ])
+        .toArray(),
+      databaseService.tweets
+        .aggregate([
+          {
+            $match
+          },
+          ...conditionTweetAggregations(user_id),
+          { $count: 'total' }
+        ])
+        .toArray()
+    ])
+    return { result, total: total.length ? total[0].total : 0 }
   }
 
   async searchByHashTags({ content, limit, page, user_id }: ISearch) {
