@@ -12,6 +12,7 @@ import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { uniqueId } from 'lodash'
+import { sendVerifyEmail } from '~/utils/email'
 
 class UserServices {
   private signAccessToken({ userId, verify }: IUserToken) {
@@ -95,6 +96,10 @@ class UserServices {
           }
         }
       )
+    const href = `${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}`
+
+    console.log('🚀 ~ UserServices ~ register ~ href:', href)
+    sendVerifyEmail(payload.email, 'Verify your email', `<a href="${href}">Verify</a>`)
 
     return { access_token, refresh_token }
   }

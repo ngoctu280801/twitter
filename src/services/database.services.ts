@@ -57,7 +57,7 @@ class DatabaseService {
     const exist = await this.users.indexExists([
       'email_1_password_1',
       'email_1',
-      'username_1',
+      // 'username_1',
       'name_text_location_text'
     ])
 

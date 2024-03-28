@@ -8,8 +8,8 @@ config()
 const sesClient = new SESClient({
   region: process.env.AWS_REGION,
   credentials: {
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string
   }
 })
 
@@ -20,6 +20,13 @@ const createSendEmailCommand = ({
   body,
   subject,
   replyToAddresses = []
+}: {
+  fromAddress: string
+  toAddresses: string | string[]
+  ccAddresses?: string | string[]
+  replyToAddresses?: string | string[]
+  body: string
+  subject: string
 }) => {
   return new SendEmailCommand({
     Destination: {
@@ -46,9 +53,9 @@ const createSendEmailCommand = ({
   })
 }
 
-const sendVerifyEmail = async (toAddress, subject, body) => {
+export const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
   const sendEmailCommand = createSendEmailCommand({
-    fromAddress: process.env.SES_FROM_ADDRESS,
+    fromAddress: process.env.SES_FROM_ADDRESS as string,
     toAddresses: toAddress,
     body,
     subject
@@ -61,5 +68,3 @@ const sendVerifyEmail = async (toAddress, subject, body) => {
     return e
   }
 }
-
-sendVerifyEmail('tuantran.280801@gmail.com', 'Xin chào', '<h1>Nội dung email</h1>')
