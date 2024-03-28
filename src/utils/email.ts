@@ -2,8 +2,11 @@
 /* eslint-disable no-undef */
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import { config } from 'dotenv'
+import fs from 'fs'
+import path from 'path'
 
 config()
+
 // Create SES service object.
 const sesClient = new SESClient({
   region: process.env.AWS_REGION,
@@ -53,7 +56,7 @@ const createSendEmailCommand = ({
   })
 }
 
-export const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
+const sendVerifyEmail = async (toAddress: string, subject: string, body: string) => {
   const sendEmailCommand = createSendEmailCommand({
     fromAddress: process.env.SES_FROM_ADDRESS as string,
     toAddresses: toAddress,
@@ -67,4 +70,34 @@ export const sendVerifyEmail = async (toAddress: string, subject: string, body: 
     console.error('Failed to send email.')
     return e
   }
+}
+
+export const sendVerifyEmailTemplate = (toAddress: string, emailVerifyToken: string) => {
+  const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf-8')
+  const href = `${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}`
+
+  return sendVerifyEmail(
+    toAddress,
+    'Verify your email',
+    verifyEmailTemplate
+      .replace('{{title}}', 'Please verify your email')
+      .replace('{{content}}', 'Click the button below to verify your email')
+      .replace('{{titleLink}}', 'Verify')
+      .replace('{{link}}', href)
+  )
+}
+
+export const sendForgotPasswordEmailTemplate = (toAddress: string, token: string) => {
+  const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf-8')
+  const href = `${process.env.CLIENT_URL}/forgot-password?token=${token}`
+
+  return sendVerifyEmail(
+    toAddress,
+    'Reset password',
+    verifyEmailTemplate
+      .replace('{{title}}', 'Reset password')
+      .replace('{{content}}', 'Click the button below to reset password')
+      .replace('{{titleLink}}', 'Reset')
+      .replace('{{link}}', href)
+  )
 }

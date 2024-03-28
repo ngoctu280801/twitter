@@ -5,6 +5,7 @@ export interface IUserToken {
   verify: UserVerifyStatus
   exp?: number
   iat?: number
+  email?: string
 }
 
 export interface IUserTokenWithPassword extends IUserToken {

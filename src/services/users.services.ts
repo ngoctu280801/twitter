@@ -12,7 +12,7 @@ import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { uniqueId } from 'lodash'
-import { sendVerifyEmail } from '~/utils/email'
+import { sendForgotPasswordEmailTemplate, sendVerifyEmailTemplate } from '~/utils/email'
 
 class UserServices {
   private signAccessToken({ userId, verify }: IUserToken) {
@@ -98,8 +98,7 @@ class UserServices {
       )
     const href = `${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}`
 
-    console.log('🚀 ~ UserServices ~ register ~ href:', href)
-    sendVerifyEmail(payload.email, 'Verify your email', `<a href="${href}">Verify</a>`)
+    sendVerifyEmailTemplate(payload.email, emailVerifyToken)
 
     return { access_token, refresh_token }
   }
@@ -159,7 +158,7 @@ class UserServices {
     return { access_token, refresh_token }
   }
 
-  async resendVerifyEmail(userId: string) {
+  async resendVerifyEmail(userId: string, email: string) {
     // recreate the email verification token
     const emailVerifyToken = await this.signEmailVerifyToken({ userId, verify: UserVerifyStatus.Unverified })
     await databaseService.users.updateOne(
@@ -174,10 +173,10 @@ class UserServices {
       }
     )
 
-    // todo: implement resend via email
+    await sendVerifyEmailTemplate(email, emailVerifyToken)
   }
 
-  async forgotPassword({ userId, verify }: IUserToken) {
+  async forgotPassword({ userId, verify, email }: IUserToken) {
     const forgotPasswordToken = await this.signForgotPasswordToken({ userId, verify })
 
     await databaseService.users.updateOne({ _id: new ObjectId(userId) }, [
@@ -189,7 +188,7 @@ class UserServices {
       }
     ])
 
-    //todo: send email http://example.com/forgot-password?token=token
+    sendForgotPasswordEmailTemplate(email as string, forgotPasswordToken)
 
     return { message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD, token: forgotPasswordToken }
   }
