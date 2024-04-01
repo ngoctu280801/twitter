@@ -6,6 +6,8 @@ import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import { isProduction } from '~/constants/config'
 import { MediaType } from '~/constants/enum'
 import { Media } from '~/models/Other'
+import { uploadFileToS3 } from '~/utils/s3'
+import fsPromise from 'fs/promises'
 
 class MediasServices {
   async handleUploadImage(req: Request) {
@@ -14,19 +16,31 @@ class MediasServices {
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
         const newName = getFileName(file.newFilename) + '.jpeg'
-        const filename = (UPLOAD_IMAGE_DIR + '/' + newName) as string
+        const filepath = (UPLOAD_IMAGE_DIR + '/' + newName) as string
 
-        await sharp(file.filepath).jpeg({ quality: 50 }).toFile(filename)
-        fs.unlink(file.filepath, (err) => {
-          if (err) {
-            console.error('Error deleting file:', err)
-          }
+        await sharp(file.filepath).jpeg({ quality: 50 }).toFile(filepath)
+
+        const result = await uploadFileToS3({
+          filename: newName,
+          filepath: filepath,
+          contentType: file.mimetype as string
         })
 
+        await Promise.all([
+          fs.unlink(file.filepath, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err)
+            }
+          }),
+          fs.unlink(filepath, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err)
+            }
+          })
+        ])
+
         return {
-          url: isProduction
-            ? `${process.env.HOST}/static/image/${newName}`
-            : `http://localhost:${process.env.PORT}/static/image/${newName}`,
+          url: result.Location as string,
           type: MediaType.Image
         }
       })
@@ -37,12 +51,17 @@ class MediasServices {
 
   async handleUploadVideo(req: Request) {
     const files = await handleUploadVideo(req)
-    const { newFilename } = files[0]
+    const { newFilename, mimetype } = files[0]
+    const filepath = (UPLOAD_VIDEO_DIR + '/' + newFilename) as string
+
+    const result = await uploadFileToS3({
+      filename: newFilename,
+      filepath: filepath,
+      contentType: mimetype as string
+    })
 
     return {
-      url: isProduction
-        ? `${process.env.HOST}/static/video/${newFilename}`
-        : `http://localhost:${process.env.PORT}/static/video/${newFilename}`,
+      url: result.Location as string,
       type: MediaType.Video
     }
   }
