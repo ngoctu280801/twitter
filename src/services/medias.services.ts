@@ -3,11 +3,9 @@ import { getFileName, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import sharp from 'sharp'
 import fs from 'fs'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
-import { isProduction } from '~/constants/config'
 import { MediaType } from '~/constants/enum'
 import { Media } from '~/models/Other'
 import { uploadFileToS3 } from '~/utils/s3'
-import fsPromise from 'fs/promises'
 
 class MediasServices {
   async handleUploadImage(req: Request) {
@@ -58,6 +56,11 @@ class MediasServices {
       filename: newFilename,
       filepath: filepath,
       contentType: mimetype as string
+    })
+    fs.unlink(filepath, (err) => {
+      if (err) {
+        console.error('Error deleting file:', err)
+      }
     })
 
     return {
