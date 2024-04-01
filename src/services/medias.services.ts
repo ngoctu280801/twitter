@@ -19,7 +19,7 @@ class MediasServices {
         await sharp(file.filepath).jpeg({ quality: 50 }).toFile(filepath)
 
         const result = await uploadFileToS3({
-          filename: newName,
+          filename: 'images/' + newName,
           filepath: filepath,
           contentType: file.mimetype as string
         })
@@ -53,7 +53,7 @@ class MediasServices {
     const filepath = (UPLOAD_VIDEO_DIR + '/' + newFilename) as string
 
     const result = await uploadFileToS3({
-      filename: newFilename,
+      filename: 'videos/' + newFilename,
       filepath: filepath,
       contentType: mimetype as string
     })
