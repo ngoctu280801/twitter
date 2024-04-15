@@ -54,11 +54,30 @@ const io = new Server(httpServer, {
     origin: 'http://localhost:3000'
   }
 })
+
+const users: {
+  [key: string]: {
+    socket_id: string
+  }
+} = {}
+
 io.on('connection', (socket) => {
-  console.log('socket connected', socket.id)
+  const user_id = socket.handshake.auth._id
+  users[user_id] = { socket_id: socket.id }
+
+  socket.on('message', (data) => {
+    if (Object.keys(users).includes(data.to)) {
+      const socketIdReceiver = users[data.to].socket_id
+      socket.to(socketIdReceiver).emit('message', { content: data.content, from: user_id })
+    } else {
+      socket.emit('message', { content: 'm cook' })
+    }
+  })
 
   socket.on('disconnect', () => {
     console.log('socket disconnected', socket.id)
+    delete users[user_id]
+    console.log('🚀 ~ io.on ~ users:', users)
   })
 })
 
