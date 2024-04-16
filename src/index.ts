@@ -16,6 +16,8 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import Conversation from './models/schemas/Conversation.schema'
+import conversationRoute from './routes/conversation.routes'
+import { ObjectId } from 'mongodb'
 
 config()
 
@@ -46,6 +48,7 @@ app.use('/api/tweet', tweetRoute)
 app.use('/api/bookmark', bookmarkRoute)
 app.use('/api/like', likeRoute)
 app.use('/api/search', searchRoute)
+app.use('/api/conversation', conversationRoute)
 app.use('/static', staticRouter)
 
 app.use(defaultErrorHandler)
@@ -74,8 +77,8 @@ io.on('connection', (socket) => {
 
     await databaseService.conversations.insertOne(
       new Conversation({
-        sender_id: from,
-        receiver_id: to,
+        sender_id: new ObjectId(from),
+        receiver_id: new ObjectId(to),
         content: content
       })
     )
