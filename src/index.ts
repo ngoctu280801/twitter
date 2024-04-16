@@ -15,6 +15,7 @@ import searchRoute from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import cors from 'cors'
+import Conversation from './models/schemas/Conversation.schema'
 
 config()
 
@@ -65,13 +66,21 @@ io.on('connection', (socket) => {
   const user_id = socket.handshake.auth._id
   users[user_id] = { socket_id: socket.id }
 
-  socket.on('message', (data) => {
-    if (Object.keys(users).includes(data.to)) {
-      const socketIdReceiver = users[data.to].socket_id
-      socket.to(socketIdReceiver).emit('message', { content: data.content, from: user_id })
-    } else {
-      socket.emit('message', { content: 'm cook' })
-    }
+  socket.on('message', async (data) => {
+    const socketIdReceiver = users[data.to].socket_id
+    if (!socketIdReceiver) return
+
+    const { from, to, content } = data
+
+    await databaseService.conversations.insertOne(
+      new Conversation({
+        sender_id: from,
+        receiver_id: to,
+        content: content
+      })
+    )
+
+    socket.to(socketIdReceiver).emit('message', { content: content, from: user_id })
   })
 
   socket.on('disconnect', () => {
