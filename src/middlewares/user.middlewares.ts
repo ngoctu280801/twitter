@@ -175,3 +175,22 @@ export const isUserLoggedInValidator = (middleware: (req: Request, res: Response
     next()
   }
 }
+
+export const getConversationsValidator = validate(
+  checkSchema(
+    {
+      receiver_id: {
+        custom: {
+          options: async (value: string, { req }) => {
+            const user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+
+            if (!user)
+              throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: HTTP_STATUS.UNAUTHORIZED })
+            return true
+          }
+        }
+      }
+    },
+    ['params']
+  )
+)

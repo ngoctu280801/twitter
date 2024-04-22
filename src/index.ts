@@ -87,9 +87,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    console.log('socket disconnected', socket.id)
     delete users[user_id]
-    console.log('🚀 ~ io.on ~ users:', users)
   })
 })
 

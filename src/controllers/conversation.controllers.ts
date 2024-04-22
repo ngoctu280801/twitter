@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import { ParamsDictionary } from 'express-serve-static-core'
+import { ConversationQuery } from '~/models/requests/Conversation.request'
 import { TokenPayload } from '~/models/requests/User.request'
 import conversationServices from '~/services/conversations.services'
 
-export const getConversationController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
+export const getConversationController = async (req: Request<ConversationQuery, any, any>, res: Response) => {
   const { user_id: senderId } = req.decodeAuthorization as TokenPayload
   const { receiver_id: receiverId } = req.params
   const page = Number(req.query.page)
