@@ -75,6 +75,7 @@ io.use(async (socket, next) => {
       throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_VERIFIED, status: HTTP_STATUS.FORBIDDEN })
     }
     socket.handshake.auth.decodeAuthorization = decode
+    socket.handshake.auth.access_token = access_token
     next()
   } catch (error) {
     next({
@@ -93,6 +94,21 @@ const users: {
 
 io.on('connection', (socket) => {
   const { user_id } = socket.handshake.auth.decodeAuthorization as TokenPayload
+
+  socket.use(async (packet, next) => {
+    const access_token = socket.handshake.auth.access_token
+    try {
+      await verifyAccessToken(access_token)
+      next()
+    } catch (error) {
+      next(new Error('Unauthorized'))
+    }
+  })
+
+  socket.on('error', (error) => {
+    if (error.message === 'Unauthorized') socket.disconnect()
+  })
+
   users[user_id] = { socket_id: socket.id }
 
   socket.on('message', async (data) => {
