@@ -69,10 +69,12 @@ io.use(async (socket, next) => {
   const { Authorization } = socket.handshake.auth
   const access_token = Authorization?.split(' ')[1]
   try {
-    const { verify } = (await verifyAccessToken(access_token)) as TokenPayload
+    const decode = (await verifyAccessToken(access_token)) as TokenPayload
+    const { verify } = decode
     if (verify !== UserVerifyStatus.Verified) {
       throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_VERIFIED, status: HTTP_STATUS.FORBIDDEN })
     }
+    socket.handshake.auth.decodeAuthorization = decode
     next()
   } catch (error) {
     next({
@@ -90,7 +92,7 @@ const users: {
 } = {}
 
 io.on('connection', (socket) => {
-  const user_id = socket.handshake.auth._id
+  const { user_id } = socket.handshake.auth.decodeAuthorization as TokenPayload
   users[user_id] = { socket_id: socket.id }
 
   socket.on('message', async (data) => {
