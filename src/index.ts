@@ -18,6 +18,12 @@ import cors from 'cors'
 import Conversation from './models/schemas/Conversation.schema'
 import conversationRoute from './routes/conversation.routes'
 import { ObjectId } from 'mongodb'
+import { verifyAccessToken } from './utils/common'
+import { UserVerifyStatus } from './constants/enum'
+import { TokenPayload } from './models/requests/User.request'
+import { ErrorWithStatus } from './models/Errors'
+import { USER_MESSAGES } from './constants/message'
+import { HTTP_STATUS } from './constants/httpStatus'
 
 config()
 
@@ -59,6 +65,24 @@ const io = new Server(httpServer, {
   }
 })
 
+io.use(async (socket, next) => {
+  const { Authorization } = socket.handshake.auth
+  const access_token = Authorization?.split(' ')[1]
+  try {
+    const { verify } = (await verifyAccessToken(access_token)) as TokenPayload
+    if (verify !== UserVerifyStatus.Verified) {
+      throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_VERIFIED, status: HTTP_STATUS.FORBIDDEN })
+    }
+    next()
+  } catch (error) {
+    next({
+      message: 'Unauthorized',
+      name: 'UnauthorizedError',
+      data: error
+    })
+  }
+})
+
 const users: {
   [key: string]: {
     socket_id: string
@@ -70,7 +94,7 @@ io.on('connection', (socket) => {
   users[user_id] = { socket_id: socket.id }
 
   socket.on('message', async (data) => {
-    const socketIdReceiver = users[data.to].socket_id
+    const socketIdReceiver = users[data.to]?.socket_id
     if (!socketIdReceiver) return
 
     const { from, to, content } = data
