@@ -34,7 +34,7 @@ tags:
   - name: user
     description: Operations about user
 paths:
-  /auth/login:
+  /api/auth/login:
     post:
       tags:
         - auth
@@ -60,11 +60,7 @@ paths:
           description: Invalid input
         '422':
           description: Validation exception
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /user/me:
+  /api/user/me:
     get:
       tags:
         - user
@@ -159,6 +155,7 @@ components:
           type: array
           items:
             type: string
+            format: MongoId
           example: []
     UserVerifyStatus:
       type: number

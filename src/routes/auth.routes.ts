@@ -25,8 +25,32 @@ import { wrapErrorHandler } from '~/utils/handlers'
 const authRouter = Router()
 
 /**
- * path:auth/login
- * Body:  {email:string, password:string}
+ * @openapi
+ *  /api/auth/login:
+ *   post:
+ *     tags:
+ *       - auth
+ *     summary: Login
+ *     description: Login
+ *     operationId: login
+ *     requestBody:
+ *       description: Login
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginBody'
+ *     responses:
+ *       '200':
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessAuthentication'
+ *       '400':
+ *         description: Invalid input
+ *       '422':
+ *         description: Validation exception
  */
 authRouter.post('/login', loginValidator, wrapErrorHandler(loginController))
 

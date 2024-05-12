@@ -16,12 +16,32 @@ import { createServer } from 'http'
 import cors from 'cors'
 import conversationRoute from './routes/conversation.routes'
 import initSocket from './utils/socket'
-import YAML from 'yaml'
-import fs from 'fs'
 import swaggerUi from 'swagger-ui-express'
+import swaggerJSDoc from 'swagger-jsdoc'
 
-const file = fs.readFileSync('./swagger.yaml', 'utf8')
-const swaggerDocument = YAML.parse(file)
+const options: swaggerJSDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Twitter Api Document',
+      version: '1.0.0'
+    }
+    // components: {
+    //   securitySchemes: {
+    //     BearerAuth: {
+    //       type: 'http',
+    //       scheme: 'bearer',
+    //       bearerFormat: 'JWT'
+    //     }
+    //   }
+    // }
+  },
+  // apis: ['./src/routes/*.routes.ts', './src/models/requests/*.request.ts'] // files containing annotations as above
+  apis: ['./swagger.yaml'] // files containing annotations as above
+}
+const openapiSpecification = swaggerJSDoc(options)
+// const file = fs.readFileSync('./swagger.yaml', 'utf8')
+// const swaggerDocument = YAML.parse(file)
 
 config()
 
@@ -54,7 +74,7 @@ app.use('/api/like', likeRoute)
 app.use('/api/search', searchRoute)
 app.use('/api/conversation', conversationRoute)
 app.use('/static', staticRouter)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
 app.use(defaultErrorHandler)
 
