@@ -19,6 +19,7 @@ import initSocket from './utils/socket'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import { envConfig } from './constants/config'
+import helmet from 'helmet'
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -57,7 +58,12 @@ const httpServer = createServer(app)
 //create folder uploads
 initFolder()
 
-app.use(cors())
+app.use(helmet())
+app.use(
+  cors({
+    origin: envConfig.clientUrl
+  })
+)
 //parse json data
 app.use(express.json())
 
