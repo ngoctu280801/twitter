@@ -18,6 +18,7 @@ import conversationRoute from './routes/conversation.routes'
 import initSocket from './utils/socket'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
+import { envConfig } from './constants/config'
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -43,8 +44,6 @@ const openapiSpecification = swaggerJSDoc(options)
 // const file = fs.readFileSync('./swagger.yaml', 'utf8')
 // const swaggerDocument = YAML.parse(file)
 
-config()
-
 databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
@@ -52,7 +51,6 @@ databaseService.connect().then(() => {
 })
 
 const app = express()
-const port = process.env.PORT
 
 const httpServer = createServer(app)
 
@@ -80,6 +78,6 @@ app.use(defaultErrorHandler)
 
 initSocket(httpServer)
 
-httpServer.listen(port, () => {
-  console.log('Server listening on', port)
+httpServer.listen(envConfig.port, () => {
+  console.log('Server listening on', envConfig.port)
 })

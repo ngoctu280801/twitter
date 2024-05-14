@@ -13,14 +13,15 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { uniqueId } from 'lodash'
 import { sendForgotPasswordEmailTemplate, sendVerifyEmailTemplate } from '~/utils/email'
+import { envConfig } from '~/constants/config'
 
 class UserServices {
   private signAccessToken({ userId, verify }: IUserToken) {
     return signToken({
       payload: { user_id: userId, verify, token_type: TokenTypes.AccessToken },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+      privateKey: envConfig.jwtSecretAccessToken,
       options: {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRED_IN
+        expiresIn: envConfig.accessTokenExpiredIn
       }
     })
   }
@@ -29,33 +30,33 @@ class UserServices {
     if (exp) {
       return signToken({
         payload: { user_id: userId, verify, token_type: TokenTypes.EmailVerificationToken, exp },
-        privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+        privateKey: envConfig.jwtSecretRefreshToken
       })
     }
     return signToken({
       payload: { user_id: userId, verify, token_type: TokenTypes.EmailVerificationToken },
-      privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+      privateKey: envConfig.jwtSecretRefreshToken,
       options: {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRED_IN
+        expiresIn: envConfig.refreshTokenExpiredIn
       }
     })
   }
 
   private decodeRefreshToken(refresh_token: string) {
-    return verifyToken({ token: refresh_token, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string })
+    return verifyToken({ token: refresh_token, secretOrPublicKey: envConfig.jwtSecretRefreshToken })
   }
 
   private signEmailVerifyToken({ userId, verify }: IUserToken) {
     return signToken({
       payload: { user_id: userId, verify, token_type: TokenTypes.RefreshToken },
-      privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+      privateKey: envConfig.jwtSecretEmailVerifyToken
     })
   }
 
   private signForgotPasswordToken({ userId, verify }: IUserToken) {
     return signToken({
       payload: { user_id: userId, verify, token_type: TokenTypes.ForgotPasswordToken },
-      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+      privateKey: envConfig.jwtSecretForgotPasswordToken
     })
   }
 
@@ -96,7 +97,7 @@ class UserServices {
           }
         }
       )
-    const href = `${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}`
+    const href = `${envConfig.clientUrl}/verify-email?token=${emailVerifyToken}`
 
     sendVerifyEmailTemplate(payload.email, emailVerifyToken)
 
@@ -299,9 +300,9 @@ class UserServices {
   private async getOAuthGoogleToken(code: string) {
     const body = {
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      client_id: envConfig.googleClientId,
+      client_secret: envConfig.googleClientSecret,
+      redirect_uri: envConfig.googleRedirectUrl,
       grant_type: 'authorization_code'
     }
 

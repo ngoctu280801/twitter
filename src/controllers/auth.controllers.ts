@@ -2,6 +2,7 @@ import { config } from 'dotenv'
 import { Response, Request } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
+import { envConfig } from '~/constants/config'
 import { UserVerifyStatus } from '~/constants/enum'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
@@ -16,8 +17,6 @@ import {
 import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
-
-config()
 
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
@@ -129,7 +128,7 @@ export const googleOAuthController = async (
     refresh_token: result.refresh_token,
     new_user: result.newUser.toString()
   }
-  const url = process.env.CLIENT_REDIRECT + '?' + new URLSearchParams(params)
+  const url = envConfig.auth0ClientRedirect + '?' + new URLSearchParams(params)
 
   return res.redirect(url)
 }

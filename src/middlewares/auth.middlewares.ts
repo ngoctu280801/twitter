@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamSchema, checkSchema } from 'express-validator'
 import { ObjectId } from 'mongodb'
+import { envConfig } from '~/constants/config'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -49,7 +50,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
 
         const decodeForgotPasswordToken = await verifyToken({
           token: value,
-          secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+          secretOrPublicKey: envConfig.jwtSecretForgotPasswordToken
         })
 
         if (!decodeForgotPasswordToken) {
@@ -209,7 +210,7 @@ export const refreshTokenValidator = validate(
               }
 
               const [decodeRefreshToken, refreshToken] = await Promise.all([
-                verifyToken({ token: value, secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
+                verifyToken({ token: value, secretOrPublicKey: envConfig.jwtSecretRefreshToken }),
                 databaseService.refreshToken.findOne({ token: value })
               ])
 
@@ -256,7 +257,7 @@ export const emailVerifyTokenValidator = validate(
 
             const decodeEmailVerifyToken = await verifyToken({
               token: value,
-              secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+              secretOrPublicKey: envConfig.jwtSecretEmailVerifyToken
             })
 
             req.decodeEmailVerifyToken = decodeEmailVerifyToken
